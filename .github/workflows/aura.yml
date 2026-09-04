@@ -1,0 +1,36 @@
+name: tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      # Report every failing combination, not just the first one.
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.11", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # working-directory matters: pytest.ini lives in backend/ and sets
+      # pythonpath, so from the repo root there is no config and no app module.
+      # The integration tests need a live Ollama with models pulled, which CI
+      # has no reason to spend ten minutes installing.
+      - name: Run offline tests
+        working-directory: backend
+        run: pytest -m "not integration"

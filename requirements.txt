@@ -1,0 +1,77 @@
+# AURA - Python dependencies
+# Install into a virtualenv:   python -m venv .venv
+#                              .\.venv\Scripts\Activate.ps1
+#                              pip install -r requirements.txt
+
+# ─────────────────────────────────────────────────────────────
+# Phase 1 - RAG (active)
+# ─────────────────────────────────────────────────────────────
+
+# Web API layer
+fastapi>=0.115
+uvicorn[standard]>=0.32
+python-multipart>=0.0.12        # required by FastAPI for file uploads
+
+# Validation / settings. Pydantic v2 is what validates every request,
+# response, and (later) every structured LLM output in this project.
+pydantic>=2.9
+pydantic-settings>=2.6
+python-dotenv>=1.0
+
+# HTTP client used to talk to Ollama (and any cloud fallback).
+# We call Ollama's REST API directly rather than using the `ollama`
+# package, so the request/response shape stays visible and swappable.
+httpx>=0.27
+
+# Vector store. Embedded mode - no separate server process.
+chromadb>=0.5.20
+
+# Document loaders (Phase 1 ingestion)
+pypdf>=5.1                      # PDF text extraction
+python-docx>=1.1                # .docx text extraction
+pandas>=2.2                     # .csv / .xlsx -> text rows
+
+# Metadata + chat history storage
+SQLAlchemy>=2.0
+
+# ─────────────────────────────────────────────────────────────
+# OPTIONAL cloud providers
+#
+# Not installed by default - the system is fully local without them.
+# Install only the ones whose API key you actually set in .env.
+# Gemini needs nothing extra (it goes through httpx, already above).
+# ─────────────────────────────────────────────────────────────
+# anthropic>=0.40           # Claude: Opus / Sonnet / Haiku
+# openai>=1.60              # OpenAI, and compatible APIs (Groq, etc.)
+
+# ─────────────────────────────────────────────────────────────
+# Dev / test
+# ─────────────────────────────────────────────────────────────
+pytest>=8.3
+pytest-asyncio>=0.24
+
+# ─────────────────────────────────────────────────────────────
+# Phase 2 - Data Analyst Agent (uncomment when Phase 1 is done)
+# ─────────────────────────────────────────────────────────────
+duckdb>=1.1
+matplotlib>=3.9                  # charts -> PNG. Static images, no browser needed.
+# scikit-learn>=1.5
+openpyxl>=3.1                   # .xlsx reading for pandas
+
+# ─────────────────────────────────────────────────────────────
+# Phase 3 - Dashboard
+# ─────────────────────────────────────────────────────────────
+# streamlit>=1.40
+
+# ─────────────────────────────────────────────────────────────
+# Phase 4 - Fine-tuning
+# NOTE: these are heavy (torch is ~2.5GB) and Unsloth on native
+# Windows is fragile. Plan to run Phase 4 in Google Colab (free T4)
+# or WSL2 unless local training proves easy.
+# ─────────────────────────────────────────────────────────────
+# torch>=2.5
+# transformers>=4.46
+# peft>=0.13
+# trl>=0.12
+# datasets>=3.1
+# unsloth
